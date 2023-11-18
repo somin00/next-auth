@@ -31,7 +31,7 @@ export default async function changePassword(req, res) {
   // 3. 입력한 비밀번호가 이전 비밀번호와 다른지 확인
 
   const { oldPassword, newPassword } = JSON.parse(req.body);
-  const currentPassword = user.password;
+  const currentPassword = user.password.toString();
   const isValid = await verifyPassword(oldPassword, currentPassword);
 
   if (!isValid) {
@@ -43,7 +43,7 @@ export default async function changePassword(req, res) {
   }
 
   // 4. 새로운 비밀번호 해싱 후 데이터베이스에 저장
-  const newHashedPassword = hashPassword(newPassword);
+  const newHashedPassword = await hashPassword(newPassword);
   const result = await userCollection.updateOne({ email: userEmail }, { $set: { password: newHashedPassword } });
 
   client.close();
